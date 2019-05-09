@@ -26,8 +26,10 @@ void *serialize(void)
 	void *raw = new char[(sizeof(char) * 16 + sizeof(int)) / (sizeof(char))];
 	char *s1 = reinterpret_cast<char *>(raw);
 	fill_random_8_string(s1);
-	*reinterpret_cast<int *>(s1 + 8) = rand();
-	fill_random_8_string(s1 + 8 + sizeof(int) / sizeof(char));
+	int *as_int = reinterpret_cast<int *>(s1 + 8);
+	*as_int = rand();
+	as_int++;
+	fill_random_8_string(reinterpret_cast<char *>(as_int));
 	return raw;
 }
 
