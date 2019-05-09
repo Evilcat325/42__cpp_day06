@@ -13,6 +13,7 @@
 	stupid pdf:
 	char literal : '0' - '9' collpas with int literal
 	treating then as ambiguous literal will print both result
+	well treating 0 as 0 '0' as char for now...
 */
 
 void print_error()
@@ -50,15 +51,17 @@ void print_double(double number)
 	// still able to represent -inf +inf nan
 	// added f suffix per pdf output
 	std::cout << "float: " << static_cast<float>(number);
-	if (floor(number) == number)
+	if (!isnan(number) && !isinf(number) && floor(number) == number)
 		std::cout << ".0";
 	std::cout << "f" << std::endl;
 
 	// append .0 if whole number
 	std::cout << "double: " << number;
-	if (floor(number) == number)
+	if (!isnan(number) && !isinf(number) && floor(number) == number)
 		std::cout << ".0";
 	std::cout << std::endl;
+
+	exit(0);
 }
 
 int main(int argc, char *argv[])
@@ -69,36 +72,30 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	std::string input = argv[1];
-	//removing suffix f as double have more precision to float;
 
+	// implict promotion char to double
+	if (input.length() == 3 && input[0] == '\'' && input[2] == '\'')
+		print_double(input[1]);
+	int i;
 	double d;
-	if (input.length() == 1)
+	std::istringstream sin(input);
+	// implict promotion int to double
+	if (input.find('.') == std::string::npos && (sin >> i))
+		print_double(i);
+
+	sin.clear();
+	sin.str(input);
+	// check double literal first (default to double)
+	if (!(sin >> d))
 	{
-		char c;
-		std::istringstream sinchar(input);
-		if (!(sinchar >> c))
+		// failed but could be a floot literal
+		if (input[input.length() - 1] == 'f')
+			input = input.substr(0, input.length() - 1);
+		std::istringstream sinnof(input);
+		if (!(sinnof >> d))
 			print_error();
-		d = c;
-		if (isnumber(c))
-		{
-			std::cout << "Printing as int literal" << std::endl;
-			print_double(d - '0');
-			std::cout << "Printing as char literal" << std::endl;
-		}
-		print_double(d);
 	}
-	else
-	{
-		std::istringstream sin(input);
-		if (!(sin >> d))
-		{
-			if (input[input.length() - 1] == 'f')
-				input = input.substr(0, input.length() - 1);
-			std::istringstream sinnof(input);
-			if (!(sinnof >> d))
-				print_error();
-		}
-		print_double(d);
-	}
+
+	print_double(d);
 	return 0;
 }
