@@ -62,7 +62,32 @@ void identify_from_pointer(Base *p)
 		std::cerr << "Null pointer" << std::endl;
 		return;
 	}
-	identify_from_reference(*p);
+	// guess I will do it properly to show I know it wont throw and return null;
+
+	A *a = dynamic_cast<A *>(p);
+	if (a)
+	{
+		std::cout << "A" << std::endl;
+		return;
+	}
+	else
+		std::cerr << "Not A dynamic cast return NULL" << std::endl;
+	B *b = dynamic_cast<B *>(p);
+	if (b)
+	{
+		std::cout << "B" << std::endl;
+		return;
+	}
+	else
+		std::cerr << "Not B dynamic cast return NULL" << std::endl;
+	C *c = dynamic_cast<C *>(p);
+	if (c)
+	{
+		std::cout << "C" << std::endl;
+		return;
+	}
+	else
+		std::cerr << "Not C dynamic cast return NULL" << std::endl;
 }
 int main()
 {
